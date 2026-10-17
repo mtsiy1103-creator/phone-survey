@@ -6,6 +6,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -34,3 +37,12 @@ jobs:
         with:
           name: phone-survey-apk
           path: app/build/outputs/apk/release/*.apk
+      - name: Publish APK as the "latest" release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/release/*.apk phone-survey.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest phone-survey.apk --title "최신 빌드" \
+            --notes "휴대폰에서 phone-survey.apk를 내려받아 설치하세요. 빌드: ${GITHUB_SHA::7}" --latest
