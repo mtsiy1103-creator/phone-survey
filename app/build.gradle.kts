@@ -18,6 +18,17 @@ android {
         versionName = "0.1.0"
     }
 
+    // A fixed debug key checked into the repo, so every CI build carries the same signature
+    // and new versions install over old ones. It is not a secret; this is a personal tool.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
